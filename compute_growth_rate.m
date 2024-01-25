@@ -3,15 +3,24 @@
 % 
 % Example usage:
 %
-% [doubling_rate, doubling_time, growth_rate] = compute_growth_rate("path/to/data.txt", OD_B, 5, "optimize", "optimize");
-% --> this will optimize the smoothing method and number of slope change points to find the one that yields the highest R2
+% [doubling_rate, doubling_time, growth_rate] = compute_growth_rate("data.txt", 5, "optimize", "optimize");
+% --> this will optimise the smoothing method and number of slope change points to find the one that yields the highest R2
 %
 % BUT you can also manually specify them, atm only "gaussian" and "avg" are supported for smoothing:
-% [doubling_rate, doubling_time, growth_rate] = compute_growth_rate("path/to/data.txt", OD_B, 5, "gaussian", "optimize");
-% [doubling_rate, doubling_time, growth_rate] = compute_growth_rate("path/to/data.txt", OD_B, 5, "optimize", 2);
-% --> note that you can choose the optimize one and specify the other
+% [doubling_rate, doubling_time, growth_rate] = compute_growth_rate("data.txt", 5, "gaussian", "optimize");
+% [doubling_rate, doubling_time, growth_rate] = compute_growth_rate("data.txt", 5, "optimize", 2);
+% --> note that you can choose the optimise one and specify the other
 %
-% TODO: implement optmization of smoothing window
+% TODO: - implement optmization of smoothing window
+% TODO: - export values
+%
+% Changes by JB: 
+% - Fixed textbox behaviour
+% - In Matlab the log function is the natural logarithm (LN).
+% Therefore, linear regression to the LN(OD) curve will give us growth
+% rate, from which we can calculate doubling time and then doubling rate. 
+% I amended the code accordingly. Alternatively, for the fit to give 
+% doubling rate directly, we would transform OD as follows: log10(smooth_od)/log10(2)
 
 function [doubling_rate, doubling_time, growth_rate] = compute_growth_rate(path, OD_var, smoothing_window_length, smoothing, max_num_changes)
 
@@ -53,9 +62,9 @@ end
 [smooth_od, r2, p, brkpt, od_fit, linear_time, linear_od, TF] = compute_growth_rate_single(od,time, best_smoothing, smoothing_window_length, best_max_num_changes);
 
 % Compute growth rate, doubling rate, and doubling time
-doubling_rate = p(1);
-doubling_time = 60 / doubling_rate;
-growth_rate = (log(2) *60) / doubling_time;
+growth_rate = p(1);
+doubling_time = log(2)*60/ growth_rate;
+doubling_rate = (60/doubling_time);
 
 % Plot
 plot_growth_rate(OD_var, brkpt, linear_time, linear_od, od_fit, r2, doubling_rate, doubling_time, growth_rate, time, smooth_od, TF, p, best_max_num_changes, best_smoothing);
@@ -98,7 +107,7 @@ figure; % Create a new figure window
 plot(time, log(smooth_od));
 title(sprintf('Growth Rate (%s)', OD_var));
 xlabel('Time (hours)'); % Adjusted to reflect the change in time units
-ylabel('log(OD)');
+ylabel('LN(OD)');
 hold on; % Keep the current plot when adding new plots
 
 % Plot the change points
@@ -113,10 +122,14 @@ plot(linear_time, od_fit, 'k', 'LineWidth', 2);
 
 % Display the equation, R-squared value, doubling rate, doubling time, and growth rate in the figure
 str = sprintf('y = %.3fx + %.3f\nR^2 = %.3f\nDoubling Rate = %.3f 1/h\nDoubling Time = %.3f min\nGrowth Rate = %.3f 1/h\nMax num changes = %d\nSmoothing: %s', p(1), p(2), r2, doubling_rate, doubling_time, growth_rate, max_num_changes, smoothing);
-annotation('textbox', [0.78, 0.07, 0.2, 0.2], 'String', str, 'FitBoxToText', 'on');
+% annotation('textbox', [0.78, 0.07, 0.2, 0.2], 'String', str, 'FitBoxToText', 'on' ,  'verticalalignment', 'bottom',  'horizontalalignment', 'right');
+text(0.975,0.025, str, ...
+    'units', 'normalized', ...
+    'horizontalalignment','right', ...
+    'verticalalignment', 'bottom');
 
 % Add a legend
-legend('log(y)','Slope Change Points',  'Linear Segment', 'Linear Fit');
+legend('log(y)','Slope Change Points', 'Linear Segment', 'Linear Fit');
 
 % Set x-axis to be in hours and have ticks per hour
 xlim([min(time), max(time)]);
