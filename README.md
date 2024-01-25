@@ -14,7 +14,7 @@ The main function `compute_growth_rate` takes as input:
   - "optimise": try out both and see which yields the highest R2
 * the maximum number of change points:
   - an integer representing the maximum number of slope change points the function will look for
-  - "optimise": try out a bunch of values and use the on that yields the highest R2 (recommended)
+  - "optimise": try out a bunch of values and use the one that yields the highest R2 (recommended)
 
 Calling the main function will return estimates of:
 * doubling rate
