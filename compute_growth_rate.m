@@ -1,25 +1,25 @@
 % Author: Wolf De Wulf
 % (but mostly co-pilot, this can probably be made much shorter)
-% 
+%
 % Example usage:
 %
-% [doubling_rate, doubling_time, growth_rate] = compute_growth_rate("data.txt", 5, "optimize", "optimize");
+% [doubling_rate, doubling_time, growth_rate] = compute_growth_rate("data.txt", "OD_B", 5, "optimize", "optimize");
 % --> this will optimise the smoothing method and number of slope change points to find the one that yields the highest R2
 %
 % BUT you can also manually specify them, atm only "gaussian" and "avg" are supported for smoothing:
-% [doubling_rate, doubling_time, growth_rate] = compute_growth_rate("data.txt", 5, "gaussian", "optimize");
-% [doubling_rate, doubling_time, growth_rate] = compute_growth_rate("data.txt", 5, "optimize", 2);
+% [doubling_rate, doubling_time, growth_rate] = compute_growth_rate("data.txt", "OD_B", 5, "gaussian", "optimize");
+% [doubling_rate, doubling_time, growth_rate] = compute_growth_rate("data.txt", "OD_B", 5, "optimize", 2);
 % --> note that you can choose the optimise one and specify the other
 %
 % TODO: - implement optmization of smoothing window
 % TODO: - export values
 %
-% Changes by JB: 
+% Changes by JB:
 % - Fixed textbox behaviour
 % - In Matlab the log function is the natural logarithm (LN).
 % Therefore, linear regression to the LN(OD) curve will give us growth
-% rate, from which we can calculate doubling time and then doubling rate. 
-% I amended the code accordingly. Alternatively, for the fit to give 
+% rate, from which we can calculate doubling time and then doubling rate.
+% I amended the code accordingly. Alternatively, for the fit to give
 % doubling rate directly, we would transform OD as follows: log10(smooth_od)/log10(2)
 
 function [doubling_rate, doubling_time, growth_rate] = compute_growth_rate(path, OD_var, smoothing_window_length, smoothing, max_num_changes)
@@ -137,22 +137,22 @@ xticks(min(time):1:max(time)); % Adjusted to reflect the change in time units
 end
 
 function [od, time] = read_data(path, OD_var)
-    % Open the file
-    fileID = fopen(path, 'r');
+% Open the file
+fileID = fopen(path, 'r');
 
-    % Read the first line and split it into parts
-    firstLine = fgetl(fileID);
-    columns = split(firstLine, ',');
-    columns = columns(1:end-2); % Remove the last two entries
+% Read the first line and split it into parts
+firstLine = fgetl(fileID);
+columns = split(firstLine, ',');
+columns = columns(1:end-2); % Remove the last two entries
 
-    % Close the file
-    fclose(fileID);
+% Close the file
+fclose(fileID);
 
-    % Read the data into a table
-    opts = detectImportOptions(path);
-    opts.VariableNames = columns;
-    opts.VariableTypes(1:numel(columns)) = {'double'}; % assuming all columns are numeric
-    data = readtable(path, opts);
-    od = data.(OD_var);
-    time = data.("time");
+% Read the data into a table
+opts = detectImportOptions(path);
+opts.VariableNames = columns;
+opts.VariableTypes(1:numel(columns)) = {'double'}; % assuming all columns are numeric
+data = readtable(path, opts);
+od = data.(OD_var);
+time = data.("time");
 end
