@@ -103,6 +103,34 @@ ss_tot = sum((linear_od - mean(linear_od)).^2);
 r2 = 1 - ss_res / ss_tot;
 end
 
+% -------------------------------------------------------------------------
+% DATA READING
+
+function [od, time] = read_data(path, OD_var)
+% Open the file
+fileID = fopen(path, 'r');
+
+% Read the first line and split it into parts
+firstLine = fgetl(fileID);
+columns = split(firstLine, ',');
+columns = columns(1:end-2); % Remove the last two entries
+
+% Close the file
+fclose(fileID);
+
+% Read the data into a table
+opts = detectImportOptions(path);
+opts.VariableNames = columns;
+opts.VariableTypes(1:numel(columns)) = {'double'}; % assuming all columns are numeric
+data = readtable(path, opts);
+od = data.(OD_var);
+time = data.("time");
+end
+
+% -------------------------------------------------------------------------
+% PLOTTING
+
+% Simple data plot
 function plot_data(time, smooth_od, OD_var)
 figure; % Create a new figure window
 
@@ -113,6 +141,8 @@ xlabel('Time (hours)'); % Adjusted to reflect the change in time units
 ylabel('LN(OD)');
 end
 
+
+% Growth rate plot
 function plot_growth_rate(OD_var, brkpt, linear_time, linear_od, od_fit, r2, doubling_rate, doubling_time, growth_rate, time, smooth_od, TF, p, max_num_changes, smoothing)
 figure; % Create a new figure window
 
@@ -147,25 +177,4 @@ legend('log(y)','Slope Change Points', 'Linear Segment', 'Linear Fit');
 % Set x-axis to be in hours and have ticks per hour
 xlim([min(time), max(time)]);
 xticks(min(time):1:max(time)); % Adjusted to reflect the change in time units
-end
-
-function [od, time] = read_data(path, OD_var)
-% Open the file
-fileID = fopen(path, 'r');
-
-% Read the first line and split it into parts
-firstLine = fgetl(fileID);
-columns = split(firstLine, ',');
-columns = columns(1:end-2); % Remove the last two entries
-
-% Close the file
-fclose(fileID);
-
-% Read the data into a table
-opts = detectImportOptions(path);
-opts.VariableNames = columns;
-opts.VariableTypes(1:numel(columns)) = {'double'}; % assuming all columns are numeric
-data = readtable(path, opts);
-od = data.(OD_var);
-time = data.("time");
 end
