@@ -22,8 +22,7 @@
 % I amended the code accordingly. Alternatively, for the fit to give
 % doubling rate directly, we would transform OD as follows: log10(smooth_od)/log10(2)
 
-[doubling_rate, doubling_time, growth_rate] = compute_growth_ratee("data.txt", "OD_B", 5, "optimize", "optimize");
-function [doubling_rate, doubling_time, growth_rate] = compute_growth_ratee(path, OD_var, smoothing_window_length, smoothing, max_num_changes)
+function [doubling_rate, doubling_time, growth_rate] = compute_growth_rate(path, OD_var, smoothing_window_length, smoothing, max_num_changes)
 
 % Read data
 [od,time] = read_data(path, OD_var);
