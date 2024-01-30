@@ -27,11 +27,12 @@ function [doubling_rate, doubling_time, growth_rate] = compute_growth_rate(path,
 % Read data
 [od,time] = read_data(path, OD_var);
 
+% Plot data
+plot_data(time, od, OD_var);
+
 % Remove noisy values below reasonable detection threshold
 od = od(od > 0.05);
 time = time(od > 0.05);
-
-plot_data(time, od, OD_var);
 
 % Define search spaces
 if string(smoothing) == "optimize"
