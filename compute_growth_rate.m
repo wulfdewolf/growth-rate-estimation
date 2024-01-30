@@ -22,7 +22,8 @@
 % I amended the code accordingly. Alternatively, for the fit to give
 % doubling rate directly, we would transform OD as follows: log10(smooth_od)/log10(2)
 
-function [doubling_rate, doubling_time, growth_rate] = compute_growth_rate(path, OD_var, smoothing_window_length, smoothing, max_num_changes)
+[doubling_rate, doubling_time, growth_rate] = compute_growth_ratee("data.txt", "OD_B", 5, "optimize", "optimize");
+function [doubling_rate, doubling_time, growth_rate] = compute_growth_ratee(path, OD_var, smoothing_window_length, smoothing, max_num_changes)
 
 % Read data
 [od,time] = read_data(path, OD_var);
@@ -30,6 +31,8 @@ function [doubling_rate, doubling_time, growth_rate] = compute_growth_rate(path,
 % Remove noisy values below reasonable detection threshold
 od = od(od > 0.05);
 time = time(od > 0.05);
+
+plot_data(time, od, OD_var);
 
 % Define search spaces
 if string(smoothing) == "optimize"
@@ -98,6 +101,16 @@ residuals = linear_od - od_fit;
 ss_res = sum(residuals.^2);
 ss_tot = sum((linear_od - mean(linear_od)).^2);
 r2 = 1 - ss_res / ss_tot;
+end
+
+function plot_data(time, smooth_od, OD_var)
+figure; % Create a new figure window
+
+% Plot the log od
+plot(time, log(smooth_od));
+title(sprintf('Growth Rate (%s)', OD_var));
+xlabel('Time (hours)'); % Adjusted to reflect the change in time units
+ylabel('LN(OD)');
 end
 
 function plot_growth_rate(OD_var, brkpt, linear_time, linear_od, od_fit, r2, doubling_rate, doubling_time, growth_rate, time, smooth_od, TF, p, max_num_changes, smoothing)
