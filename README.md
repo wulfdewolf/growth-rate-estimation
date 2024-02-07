@@ -30,4 +30,4 @@ OD values smaller than 0.05 are dropped, since this represents the detection thr
 
 
 # 3. Questions
-Feel free to email me if you have questions: [wolf.de.wulf@ed.ac.uk](mailto:wolf.de.wulf@ed.ac.uk)
+Feel free to send me questions: [wolf.de.wulf@ed.ac.uk](mailto:wolf.de.wulf@ed.ac.uk)
