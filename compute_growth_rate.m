@@ -85,14 +85,21 @@ if smoothing == "gaussian"
 elseif smoothing == "avg"
     smooth_od = movmean(od, smoothing_window_length);
 end
-
+plot_data(time, smooth_od, "test")
 % Detect the linear segment in log(y)
 TF = ischange(log(smooth_od), 'linear', 'MaxNumChanges', max_num_changes);
 brkpt = time(TF==1);
 
 % Fit a linear regression to the linear segment
-linear_time = time(time>=brkpt(1) & time<=brkpt(2));
-linear_od = log(smooth_od(time>=brkpt(1) & time<=brkpt(2)));
+if length(brkpt) < 2
+    start_point = 0.0;
+    end_point = brkpt(1);
+else
+    start_point = brkpt(1);
+    end_point = brkpt(2);
+end
+linear_time = time(time>=start_point & time<=end_point);
+linear_od = log(smooth_od(time>=start_point & time<=end_point));
 p = polyfit(linear_time, linear_od, 1);
 
 % Compute R^2
